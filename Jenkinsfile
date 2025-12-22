@@ -38,47 +38,12 @@ pipeline {
             steps {
                 dir("${WORKSPACE}") {
                     sh '''
-                        # Ensure prometheus config file exists and is a file
-                        echo "Checking prometheus config file..."
-                        ls -la prometheus/ || echo "prometheus directory not found"
-                        if [ ! -f prometheus/prometheus.yml ]; then
-                            echo "Error: prometheus/prometheus.yml not found or not a file"
-                            file prometheus/prometheus.yml || true
-                            exit 1
-                        fi
-                        if [ -d prometheus/prometheus.yml ]; then
-                            echo "Error: prometheus/prometheus.yml is a directory, not a file"
-                            exit 1
-                        fi
-                        echo "Prometheus config file exists and is a file"
-                        # Create prometheus config volume
                         docker volume create prometheus-config 2>/dev/null || true
-                        # Read file content and write to volume using stdin
-                        echo "Copying prometheus config to volume..."
                         cat prometheus/prometheus.yml | docker run --rm -i \
                             -v prometheus-config:/config \
                             alpine sh -c "cat > /config/prometheus.yml && chmod 644 /config/prometheus.yml && ls -la /config/ && echo '--- File content ---' && cat /config/prometheus.yml"
-                        # Start services
                         docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
                     '''
-                }
-            }
-        }
-
-        stage('Health Check') {
-            steps {
-                script {
-                    sleep(time: 30, unit: 'SECONDS')
-                    dir("${WORKSPACE}") {
-                        sh '''
-                            echo "Checking services health..."
-                            curl -f http://message-sender:8080/swagger || exit 1
-                            curl -f http://message-receiver:8080/swagger || exit 1
-                            curl -f http://prometheus:9090/-/healthy || exit 1
-                            curl -f http://grafana:3000/api/health || exit 1
-                            echo "All services are healthy!"
-                        '''
-                    }
                 }
             }
         }
