@@ -43,7 +43,7 @@ app.UseHttpMetrics();
 app.MapMetrics();
 
 // Minimal API endpoints
-app.MapPost("/api/message/send", async (MessageDto message, IModel channel, ILogger<Program> logger) =>
+app.MapPost("/api/message/send", (MessageDto message, IModel channel, ILogger<Program> logger) =>
 {
     try
     {
