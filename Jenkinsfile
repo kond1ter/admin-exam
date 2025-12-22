@@ -38,25 +38,27 @@ pipeline {
             steps {
                 dir("${WORKSPACE}") {
                     sh '''
-                        # Ensure prometheus config file exists
+                        # Ensure prometheus config file exists and is a file
+                        echo "Checking prometheus config file..."
+                        ls -la prometheus/ || echo "prometheus directory not found"
                         if [ ! -f prometheus/prometheus.yml ]; then
-                            echo "Error: prometheus/prometheus.yml not found"
-                            ls -la prometheus/ || echo "prometheus directory not found"
+                            echo "Error: prometheus/prometheus.yml not found or not a file"
+                            file prometheus/prometheus.yml || true
                             exit 1
                         fi
-                        # Verify it's a file, not a directory
                         if [ -d prometheus/prometheus.yml ]; then
                             echo "Error: prometheus/prometheus.yml is a directory, not a file"
                             exit 1
                         fi
-                        # Create prometheus config volume and copy config file
+                        echo "Prometheus config file exists and is a file"
+                        # Create prometheus config volume
                         docker volume create prometheus-config 2>/dev/null || true
-                        # Create a temporary container to copy the config file
-                        # Use absolute path and ensure we're copying a file
+                        # Copy config file content directly to volume using cat
+                        echo "Copying prometheus config to volume..."
                         docker run --rm \
                             -v prometheus-config:/config \
-                            -v ${WORKSPACE}:/workspace \
-                            alpine sh -c "cp /workspace/prometheus/prometheus.yml /config/prometheus.yml && ls -la /config/"
+                            -v ${WORKSPACE}/prometheus/prometheus.yml:/source.yml:ro \
+                            alpine sh -c "cat /source.yml > /config/prometheus.yml && chmod 644 /config/prometheus.yml && ls -la /config/ && cat /config/prometheus.yml"
                         # Start services
                         docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
                     '''
