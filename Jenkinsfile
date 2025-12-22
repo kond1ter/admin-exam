@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         DOCKER_COMPOSE = 'docker-compose'
+        WORKSPACE_DIR = "${WORKSPACE}"
     }
 
     stages {
@@ -14,25 +15,31 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                sh '''
-                    docker-compose build
-                '''
+                dir("${WORKSPACE}") {
+                    sh '''
+                        docker-compose build message-sender message-receiver
+                    '''
+                }
             }
         }
 
         stage('Stop Existing Containers') {
             steps {
-                sh '''
-                    docker-compose down || true
-                '''
+                dir("${WORKSPACE}") {
+                    sh '''
+                        docker-compose down || true
+                    '''
+                }
             }
         }
 
         stage('Start Services') {
             steps {
-                sh '''
-                    docker-compose up -d
-                '''
+                dir("${WORKSPACE}") {
+                    sh '''
+                        docker-compose up -d
+                    '''
+                }
             }
         }
 
@@ -40,14 +47,16 @@ pipeline {
             steps {
                 script {
                     sleep(time: 30, unit: 'SECONDS')
-                    sh '''
-                        echo "Checking services health..."
-                        curl -f http://localhost:5001/swagger || exit 1
-                        curl -f http://localhost:5002/swagger || exit 1
-                        curl -f http://localhost:9090/-/healthy || exit 1
-                        curl -f http://localhost:3000/api/health || exit 1
-                        echo "All services are healthy!"
-                    '''
+                    dir("${WORKSPACE}") {
+                        sh '''
+                            echo "Checking services health..."
+                            curl -f http://message-sender:8080/swagger || exit 1
+                            curl -f http://message-receiver:8080/swagger || exit 1
+                            curl -f http://prometheus:9090/-/healthy || exit 1
+                            curl -f http://grafana:3000/api/health || exit 1
+                            echo "All services are healthy!"
+                        '''
+                    }
                 }
             }
         }
@@ -62,7 +71,9 @@ pipeline {
         }
         failure {
             echo 'Pipeline failed!'
-            sh 'docker-compose logs'
+            dir("${WORKSPACE}") {
+                sh 'docker-compose logs'
+            }
         }
     }
 }
