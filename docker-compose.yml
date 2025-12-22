@@ -65,6 +65,9 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+    depends_on:
+      - message-sender
+      - message-receiver
     networks:
       - app-network
 

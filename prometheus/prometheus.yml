@@ -10,6 +10,7 @@ scrape_configs:
           service: 'message-sender'
     metrics_path: '/metrics'
     scrape_interval: 15s
+    scrape_timeout: 10s
 
   - job_name: 'message-receiver'
     static_configs:
@@ -18,4 +19,5 @@ scrape_configs:
           service: 'message-receiver'
     metrics_path: '/metrics'
     scrape_interval: 15s
+    scrape_timeout: 10s
 

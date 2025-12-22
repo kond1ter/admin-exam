@@ -46,7 +46,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 app.UseHttpMetrics();
-app.MapMetrics();
 
 // Minimal API endpoints
 app.MapPost("/api/message/send", (MessageDto message, IModel channel, ILogger<Program> logger) =>
@@ -78,6 +77,9 @@ app.MapPost("/api/message/send", (MessageDto message, IModel channel, ILogger<Pr
 .WithOpenApi()
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status500InternalServerError);
+
+// Map metrics endpoint after all other routes
+app.MapMetrics();
 
 app.Run();
 

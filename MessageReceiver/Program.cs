@@ -41,7 +41,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 app.UseHttpMetrics();
-app.MapMetrics();
 
 // Minimal API endpoints
 app.MapGet("/api/message/all", (ConcurrentBag<MessageDto> messages) =>
@@ -59,6 +58,9 @@ app.MapGet("/api/message/count", (ConcurrentBag<MessageDto> messages) =>
 .WithName("GetMessageCount")
 .WithOpenApi()
 .Produces<int>(StatusCodes.Status200OK);
+
+// Map metrics endpoint after all other routes
+app.MapMetrics();
 
 app.Run();
 
