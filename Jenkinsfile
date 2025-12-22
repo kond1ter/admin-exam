@@ -41,14 +41,15 @@ pipeline {
                         # Ensure prometheus config file exists
                         if [ ! -f prometheus/prometheus.yml ]; then
                             echo "Error: prometheus/prometheus.yml not found"
+                            ls -la prometheus/ || echo "prometheus directory not found"
                             exit 1
                         fi
-                        # Use absolute path for prometheus config
-                        PROMETHEUS_PATH="${WORKSPACE}/prometheus/prometheus.yml"
-                        # Create temporary docker-compose file with absolute path
-                        sed "s|\\./prometheus/prometheus\\.yml|${PROMETHEUS_PATH}|g" docker-compose.yml > docker-compose.tmp.yml
-                        docker-compose -f docker-compose.tmp.yml up -d rabbitmq message-sender message-receiver prometheus grafana
-                        rm -f docker-compose.tmp.yml
+                        # Create prometheus config volume and copy config file
+                        docker volume create prometheus-config 2>/dev/null || true
+                        # Create a temporary container to copy the config file
+                        docker run --rm -v prometheus-config:/config -v ${WORKSPACE}/prometheus:/source alpine sh -c "cp /source/prometheus.yml /config/prometheus.yml"
+                        # Start services
+                        docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
                     '''
                 }
             }
