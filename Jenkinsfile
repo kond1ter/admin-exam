@@ -40,8 +40,8 @@ pipeline {
                     sh '''
                         docker volume create prometheus-config 2>/dev/null || true
                         cat prometheus/prometheus.yml | docker run --rm -i \
-                            -v prometheus-config:/config \
-                            alpine sh -c "cat > /config/prometheus.yml && chmod 644 /config/prometheus.yml && ls -la /config/ && echo '--- File content ---' && cat /config/prometheus.yml"
+                            -v prometheus-config:/etc/prometheus \
+                            alpine sh -c "cat > /etc/prometheus/prometheus.yml && chmod 644 /etc/prometheus/prometheus.yml && ls -la /etc/prometheus/ && echo '--- File content ---' && cat /etc/prometheus/prometheus.yml"
                         docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
                     '''
                 }
