@@ -60,7 +60,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-config:/etc/prometheus
       - prometheus-data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -102,6 +102,7 @@ services:
 
 volumes:
   prometheus-data:
+  prometheus-config:
   grafana-data:
   jenkins-data:
 
