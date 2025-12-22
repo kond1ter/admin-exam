@@ -63,10 +63,20 @@ app.MapGet("/api/message/count", (ConcurrentBag<MessageDto> messages) =>
 app.Run();
 
 // DTOs
-public record MessageDto(
-    string Text,
-    [property: JsonPropertyName("timestamp")] DateTime Timestamp)
+public record MessageDto
 {
+    public string Text { get; init; } = string.Empty;
+    
+    [JsonPropertyName("timestamp")]
+    public DateTime Timestamp { get; init; }
+    
+    [JsonConstructor]
+    public MessageDto(string text, DateTime timestamp)
+    {
+        Text = text;
+        Timestamp = timestamp;
+    }
+    
     public MessageDto(string text) : this(text, DateTime.UtcNow) { }
 }
 

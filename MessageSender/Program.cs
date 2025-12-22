@@ -10,6 +10,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure JSON options for record type deserialization
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
 // Configure RabbitMQ
 var rabbitConfig = builder.Configuration.GetSection("RabbitMQ");
 var factory = new ConnectionFactory
@@ -76,9 +82,19 @@ app.MapPost("/api/message/send", (MessageDto message, IModel channel, ILogger<Pr
 app.Run();
 
 // DTOs
-public record MessageDto(
-    string Text,
-    [property: JsonPropertyName("timestamp")] DateTime Timestamp)
+public record MessageDto
 {
+    public string Text { get; init; } = string.Empty;
+    
+    [JsonPropertyName("timestamp")]
+    public DateTime Timestamp { get; init; }
+    
+    [JsonConstructor]
+    public MessageDto(string text, DateTime timestamp)
+    {
+        Text = text;
+        Timestamp = timestamp;
+    }
+    
     public MessageDto(string text) : this(text, DateTime.UtcNow) { }
 }
