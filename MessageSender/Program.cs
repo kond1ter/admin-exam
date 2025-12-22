@@ -69,6 +69,7 @@ app.MapPost("/api/message/send", (MessageDto message, IModel channel, ILogger<Pr
     }
 })
 .WithName("SendMessage")
+.WithOpenApi()
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status500InternalServerError);
 
