@@ -4,12 +4,6 @@ using System.Text;
 using System.Text.Json;
 using prometheus;
 
-public class MessageDto
-{
-    public string Text { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-}
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
@@ -79,4 +73,10 @@ app.MapMetrics();
 app.MapControllers();
 
 app.Run();
+
+public class MessageDto
+{
+    public string Text { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+}
 

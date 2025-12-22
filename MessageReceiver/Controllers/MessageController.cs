@@ -36,9 +36,3 @@ public class MessageController : ControllerBase
     }
 }
 
-public class MessageDto
-{
-    public string Text { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-}
-
