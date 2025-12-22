@@ -27,7 +27,8 @@ pipeline {
             steps {
                 dir("${WORKSPACE}") {
                     sh '''
-                        docker-compose down || true
+                        docker-compose stop rabbitmq message-sender message-receiver prometheus grafana || true
+                        docker-compose rm -f rabbitmq message-sender message-receiver prometheus grafana || true
                     '''
                 }
             }
@@ -37,7 +38,7 @@ pipeline {
             steps {
                 dir("${WORKSPACE}") {
                     sh '''
-                        docker-compose up -d
+                        docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
                     '''
                 }
             }
