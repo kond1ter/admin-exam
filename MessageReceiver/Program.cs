@@ -2,7 +2,7 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
-using prometheus;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
