@@ -53,12 +53,11 @@ pipeline {
                         echo "Prometheus config file exists and is a file"
                         # Create prometheus config volume
                         docker volume create prometheus-config 2>/dev/null || true
-                        # Copy config file content directly to volume using cat
+                        # Read file content and write to volume using stdin
                         echo "Copying prometheus config to volume..."
-                        docker run --rm \
+                        cat prometheus/prometheus.yml | docker run --rm -i \
                             -v prometheus-config:/config \
-                            -v ${WORKSPACE}/prometheus/prometheus.yml:/source.yml:ro \
-                            alpine sh -c "cat /source.yml > /config/prometheus.yml && chmod 644 /config/prometheus.yml && ls -la /config/ && cat /config/prometheus.yml"
+                            alpine sh -c "cat > /config/prometheus.yml && chmod 644 /config/prometheus.yml && ls -la /config/ && echo '--- File content ---' && cat /config/prometheus.yml"
                         # Start services
                         docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
                     '''
