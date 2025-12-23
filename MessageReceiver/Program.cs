@@ -51,7 +51,7 @@ app.MapGet("/api/message/all", (ConcurrentBag<MessageDto> messages) =>
 .WithOpenApi()
 .Produces<MessageDto[]>(StatusCodes.Status200OK);
 
-app.MapGet("/api/message/count", (ConcurrentBag<MessageDto> messages) =>
+app.MapGet("/api/message/count", (ConcurrentBag<MessageDto> messages) => 
 {
     return Results.Ok(new { count = messages.Count });
 })
