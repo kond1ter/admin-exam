@@ -105,7 +105,7 @@ public record MessageDto
     [JsonConstructor]
     public MessageDto(string text, DateTime timestamp)
     {
-        Text = text + "123";
+        Text = text;
         Timestamp = timestamp;
     }
     
