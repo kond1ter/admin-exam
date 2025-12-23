@@ -17,7 +17,7 @@ pipeline {
             steps {
                 dir("${WORKSPACE}") {
                     sh '''
-                        docker-compose build message-sender message-receiver
+                        docker-compose build message-sender message-receiver prometheus
                     '''
                 }
             }
