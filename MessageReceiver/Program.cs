@@ -26,8 +26,38 @@ var factory = new ConnectionFactory
     Password = rabbitConfig["Password"] ?? "guest"
 };
 
-// Register RabbitMQ consumer as hosted service
-builder.Services.AddSingleton<IConnection>(_ => factory.CreateConnection());
+// Register RabbitMQ connection with retry logic
+builder.Services.AddSingleton<IConnection>(sp =>
+{
+    var logger = sp.GetRequiredService<ILogger<Program>>();
+    var maxRetries = 10;
+    var delay = TimeSpan.FromSeconds(2);
+    
+    for (int i = 0; i < maxRetries; i++)
+    {
+        try
+        {
+            logger.LogInformation("Attempting to connect to RabbitMQ (attempt {Attempt}/{MaxRetries})...", i + 1, maxRetries);
+            return factory.CreateConnection();
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Failed to connect to RabbitMQ. Retrying in {Delay} seconds...", delay.TotalSeconds);
+            if (i < maxRetries - 1)
+            {
+                Thread.Sleep(delay);
+            }
+            else
+            {
+                logger.LogError(ex, "Failed to connect to RabbitMQ after {MaxRetries} attempts", maxRetries);
+                throw;
+            }
+        }
+    }
+    
+    throw new InvalidOperationException("Failed to create RabbitMQ connection");
+});
+
 builder.Services.AddHostedService<RabbitMqConsumerService>();
 
 var app = builder.Build();
