@@ -59,7 +59,7 @@ app.MapGet("/api/message/count", (ConcurrentBag<MessageDto> messages) =>
 .WithOpenApi()
 .Produces<int>(StatusCodes.Status200OK);
 
-// Map metrics endpoint after all other routes
+// Map metrics endpoint - must be last
 app.MapMetrics();
 
 app.Run();

@@ -78,7 +78,7 @@ app.MapPost("/api/message/send", (MessageDto message, IModel channel, ILogger<Pr
 .Produces(StatusCodes.Status200OK)
 .Produces(StatusCodes.Status500InternalServerError);
 
-// Map metrics endpoint after all other routes
+// Map metrics endpoint - must be last
 app.MapMetrics();
 
 app.Run();

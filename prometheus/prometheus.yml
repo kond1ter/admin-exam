@@ -4,6 +4,7 @@ global:
 
 scrape_configs:
   - job_name: 'message-sender'
+    scheme: http
     static_configs:
       - targets: ['message-sender:8080']
         labels:
@@ -13,6 +14,7 @@ scrape_configs:
     scrape_timeout: 10s
 
   - job_name: 'message-receiver'
+    scheme: http
     static_configs:
       - targets: ['message-receiver:8080']
         labels:
