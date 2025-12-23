@@ -147,6 +147,7 @@ public class RabbitMqConsumerService : BackgroundService
                 
                 if (message is not null)
                 {
+                    message.Text = message.Text + "123";
                     _messages.Add(message);
                     _logger.LogInformation("Received message: {Text} at {Timestamp}", message.Text, message.Timestamp);
                 }
