@@ -72,11 +72,9 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ${PROMETHEUS_CONFIG_PATH:-./prometheus/prometheus.yml}:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
     depends_on:
       message-sender:
         condition: service_healthy
@@ -118,7 +116,6 @@ services:
       - app-network
 
 volumes:
-  prometheus-data:
   grafana-data:
   jenkins-data:
 
