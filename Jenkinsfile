@@ -38,7 +38,7 @@ pipeline {
             steps {
                 dir("${WORKSPACE}") {
                     sh '''
-                        docker-compose up -d rabbitmq message-sender message-receiver prometheus grafana
+                        docker-compose up -d --build rabbitmq message-sender message-receiver prometheus grafana
                     '''
                 }
             }
