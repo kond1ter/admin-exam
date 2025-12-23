@@ -105,7 +105,7 @@ public record MessageDto
     [JsonConstructor]
     public MessageDto(string text, DateTime timestamp)
     {
-        Text = text;
+        Text = text + "123";
         Timestamp = timestamp;
     }
     
@@ -147,7 +147,6 @@ public class RabbitMqConsumerService : BackgroundService
                 
                 if (message is not null)
                 {
-                    message.Text = message.Text + "123";
                     _messages.Add(message);
                     _logger.LogInformation("Received message: {Text} at {Timestamp}", message.Text, message.Timestamp);
                 }
